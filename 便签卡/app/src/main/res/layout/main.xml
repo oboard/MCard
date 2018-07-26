@@ -2,7 +2,8 @@
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
-	android:layout_width="match_parent">
+	android:layout_width="match_parent"
+	android:background="#AA000055">
 
 	<ScrollView
 		android:layout_height="match_parent"
@@ -12,11 +13,29 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-            android:id="@+id/mainLinearLayout">
+			android:id="@+id/mainLinearLayout"
+			android:paddingTop="100dp">
 
 		</LinearLayout>
 
 	</ScrollView>
+
+	<FrameLayout
+		android:layout_height="80dp"
+		android:layout_width="match_parent"
+		android:id="@+id/mainFrameLayout">
+
+		<TextView
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+            android:fitsSystemWindows="true"
+			android:background="#66000000"
+			android:text="@string/app_name"
+			android:textSize="20sp"
+			android:gravity="center"
+			android:textColor="#FFFFFF"/>
+
+	</FrameLayout>
 
 </FrameLayout>
 
