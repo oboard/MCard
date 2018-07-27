@@ -1,10 +1,15 @@
 package oboard.mcard;
 
-import android.content.*;
-import android.graphics.*;
-import android.util.*;
-import android.widget.*;
-import android.graphics.drawable.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
+import android.view.View;
 
 public class CardView extends FrameLayout {
 

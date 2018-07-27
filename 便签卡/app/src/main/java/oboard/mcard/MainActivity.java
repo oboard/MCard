@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import android.content.Intent;
+import android.app.ActivityOptions;
 
 public class MainActivity extends Activity {
     ArrayList<String> s = new ArrayList<String>();
@@ -38,20 +40,19 @@ public class MainActivity extends Activity {
             S.addIndex("tm", "t", "欢迎使用便签卡，长按删除这条信息").ok();
 
         }
-        S.addIndex("tm", "t", "欢迎使用记录卡，长按删除这条信息").ok();
         //读取信息
         for (int i = 0; i < S.get("tm", 0); i++) {
             s.add(S.get("t" + i, "散落在地上的卡片"));
         }
         freshList();
-        linearlayout.setDrawingCacheEnabled(true);
         //设置滚动试图
         scrollview.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
                 public void onScrollChange(View view, int a, int b, int c, int d) {
+                    view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    
                     if (cacheUI == null) {
 
                         cacheUI = loadBitmapFromView(linearlayout);
-                        //linearlayout.setDrawingCacheEnabled(false);
                         if (cacheUI != null)
                             cacheUI = FastBlur.rsBlur(MainActivity.this, cacheUI, 25);
                     }
@@ -67,6 +68,8 @@ public class MainActivity extends Activity {
 
                         framelayout.setBackgroundDrawable(bd);
                     }
+                    view.setLayerType(View.LAYER_TYPE_NONE, null);
+                    
                 }
             });
     }
@@ -75,18 +78,26 @@ public class MainActivity extends Activity {
         for (int i = 0; i < s.size(); i++) {
             CardView c = new CardView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(10, 10, 10, 10);
+            lp.setMargins(20, 20, 20, 20);
             c.setLayoutParams(lp);
-            c.setPadding(20, 100, 20, 100);
-            c.setColor(Color.WHITE);
-            TextView t = new TextView(this);
+            c.setPadding(50, 100, 20, 100);
+            c.setRound(10);
+            //c.setColor(Color.argb(200,255,255,255));
+            final TextView t = new TextView(this);
             t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             t.setText(s.get(i));
             t.setTextColor(Color.BLACK);
             t.setShadowLayer(5, 1, 1, Color.GRAY);
             c.addView(t);
+            c.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    t.setTransitionName("text");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startActivity(new Intent(MainActivity.this, EditActivity.class), ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, t, "text").toBundle());
+                    }
+                }
+            });
             linearlayout.addView(c);
-
         }
 
     }
