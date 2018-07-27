@@ -2,5 +2,6 @@
 <resources>
 
     <string name="app_name">便签卡</string>
-
+    <string name="edit_name">编辑</string>
+    
 </resources>

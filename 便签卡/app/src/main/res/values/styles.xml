@@ -2,5 +2,6 @@
 <resources>
 
     <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Wallpaper.NoTitleBar"/>
-
+    <style name="AppThemeE" parent="@android:style/Theme.DeviceDefault.NoActionBar"/>
+        
 </resources>

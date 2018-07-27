@@ -1,6 +1,7 @@
 package oboard.mcard;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
-import android.content.Intent;
-import android.app.ActivityOptions;
 
 public class MainActivity extends Activity {
     ArrayList<String> s = new ArrayList<String>();
@@ -49,7 +48,7 @@ public class MainActivity extends Activity {
         scrollview.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
                 public void onScrollChange(View view, int a, int b, int c, int d) {
                     view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-                    
+
                     if (cacheUI == null) {
 
                         cacheUI = loadBitmapFromView(linearlayout);
@@ -69,7 +68,7 @@ public class MainActivity extends Activity {
                         framelayout.setBackgroundDrawable(bd);
                     }
                     view.setLayerType(View.LAYER_TYPE_NONE, null);
-                    
+
                 }
             });
     }
@@ -89,14 +88,23 @@ public class MainActivity extends Activity {
             t.setTextColor(Color.BLACK);
             t.setShadowLayer(5, 1, 1, Color.GRAY);
             c.addView(t);
+            final int j = i;//final的i
             c.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    t.setTransitionName("text");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        startActivity(new Intent(MainActivity.this, EditActivity.class), ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, t, "text").toBundle());
+                    public void onClick(View view) {
+                        //  t.setTransitionName("text");
+                        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                        intent.putExtra("id", j);
+                        intent.putExtra("data", t.getText().toString());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        }//, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, t, "text").toBundle());
+                        
+                        startActivity(intent);
+
                     }
-                }
-            });
+                });
             linearlayout.addView(c);
         }
 
