@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import android.app.WallpaperManager;
 
 public class MainActivity extends Activity {
     ArrayList<String> s = new ArrayList<String>();
@@ -23,6 +24,7 @@ public class MainActivity extends Activity {
     LinearLayout linearlayout;
     ScrollView scrollview;
     FrameLayout framelayout;
+    WallpaperManager mWallpaperManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,19 +45,21 @@ public class MainActivity extends Activity {
         for (int i = 0; i < S.get("tm", 0); i++) {
             s.add(S.get("t" + i, "散落在地上的卡片"));
         }
+        
+        mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+        ((FrameLayout)scrollview.getParent()).setBackgroundDrawable(mWallpaperManager.getDrawable());
+        
+        
         freshList();
         //设置滚动试图
         scrollview.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
                 public void onScrollChange(View view, int a, int b, int c, int d) {
-                    view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-                    if (cacheUI == null) {
-
-                        cacheUI = loadBitmapFromView(linearlayout);
-                        if (cacheUI != null)
-                            cacheUI = FastBlur.rsBlur(MainActivity.this, cacheUI, 25);
-                    }
+                   if (cacheUI == null) {
+                       cacheUI = loadBitmapFromView(linearlayout);
+                       cacheUI = FastBlur.rsBlur(MainActivity.this, cacheUI, 25);
+                   }
                     if (cacheUI != null) {
+                        
                         BitmapDrawable bd = 
                             new BitmapDrawable(
                             Bitmap.createBitmap(
@@ -64,11 +68,11 @@ public class MainActivity extends Activity {
                                 Math.abs(scrollview.getScrollY()),
                                 cacheUI.getWidth(), 
                                 framelayout.getHeight()));
-
-                        framelayout.setBackgroundDrawable(bd);
+                        if (bd != null) {
+                            framelayout.setBackground(bd);
+                        }
                     }
-                    view.setLayerType(View.LAYER_TYPE_NONE, null);
-
+                    
                 }
             });
     }
@@ -81,7 +85,7 @@ public class MainActivity extends Activity {
             c.setLayoutParams(lp);
             c.setPadding(50, 100, 20, 100);
             c.setRound(10);
-            //c.setColor(Color.argb(200,255,255,255));
+            c.setColor(Color.argb(200,255,255,255));
             final TextView t = new TextView(this);
             t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             t.setText(s.get(i));
@@ -110,7 +114,8 @@ public class MainActivity extends Activity {
 
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
+
+    public Bitmap loadBitmapFromView(View v) {
         if (v == null) {
             return null;
         }
@@ -118,6 +123,7 @@ public class MainActivity extends Activity {
         screenshot = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(screenshot);
         //c.translate(-v.getScrollX(), -v.getScrollY());
+        mWallpaperManager.getDrawable().draw(c);
         v.draw(c);
         return screenshot;
     }

@@ -37,6 +37,7 @@ public class CardView extends FrameLayout {
         mMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         mZonePaint.setAntiAlias(true);
         mZonePaint.setColor(mColor);
+        
         mSeen = true;
     }
 
