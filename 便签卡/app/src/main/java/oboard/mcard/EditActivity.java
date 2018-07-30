@@ -9,6 +9,7 @@ import android.view.View;
 
 public class EditActivity extends Activity {
     
+    static MainActivity main;
     EditText edittext;
     TextView textview;
 
@@ -27,6 +28,8 @@ public class EditActivity extends Activity {
     
     public void Finish() {
         S.put("t" + getIntent().getIntExtra("id", -1), edittext.getText().toString()).ok();
+        if (main != null)
+        main.freshList();
         finishAndRemoveTask();
     }
 
