@@ -19,6 +19,7 @@ public final class R {
         public static final int editTextView1=0x7f070000;
         public static final int mainFrameLayout=0x7f070003;
         public static final int mainLinearLayout=0x7f070002;
+        public static final int plus=0x7f070004;
     }
     public static final class layout {
         public static final int edit=0x7f040000;

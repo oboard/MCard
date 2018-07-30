@@ -14,24 +14,26 @@
 		<ImageView
 			android:layout_height="50dp"
 			android:layout_width="50dp"
-            android:onClick="Finish"
+			android:onClick="Finish"
 			android:background="?android:attr/selectableItemBackground"
 			android:src="@drawable/image_back"/>
 
-		<TextView
+		<EditText
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="time"
+			android:text="无标题"
 			android:id="@+id/editTextView1"
 			android:layout_gravity="center_vertical"
 			android:textColor="#FFFFFF"
+			android:singleLine="true"
+			android:maxLines="1"
 			android:layout_marginLeft="10dp"
 			android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 	</LinearLayout>
 
 	<EditText
-        android:id="@+id/editEditText"
+		android:id="@+id/editEditText"
 		android:layout_height="match_parent"
 		android:inputType="textMultiLine"
 		android:layout_width="match_parent"

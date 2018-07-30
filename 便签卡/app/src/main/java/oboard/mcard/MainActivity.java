@@ -10,8 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -26,6 +26,8 @@ public class MainActivity extends Activity {
     ScrollView scrollview;
     FrameLayout framelayout;
     WallpaperManager mWallpaperManager;
+    Button plus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,10 +39,11 @@ public class MainActivity extends Activity {
         linearlayout = (LinearLayout)findViewById(R.id.mainLinearLayout);
         framelayout = (FrameLayout)findViewById(R.id.mainFrameLayout);
         scrollview = (ScrollView)linearlayout.getParent();
+        plus = (Button)findViewById(R.id.plus);
 
         if (S.init(this, "mcard").get("f", false) == true) {
-            S.addIndex("tm", "t", "欢迎使用便签卡，长按删除这条信息").ok();
-
+            S.addIndex("tim", "ti", "｡◕‿◕｡").ok();
+            S.addIndex("tm", "t", "欢迎使用便签卡\n长按删除这条信息\n点击编辑这条信息\n开发者@一块小板子").ok();
         }
 
         mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
@@ -70,22 +73,36 @@ public class MainActivity extends Activity {
 
                 }
             });
-            EditActivity.main = this;
-    }
 
-    //boolean firsttime = false;
+        plus.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    int id = S.get("tm", -1) + 1;
+                    Intent intent = new Intent(MainActivity.this, EditActivity.class);
+
+                    intent.putExtra("id", id);
+                    intent.putExtra("data", "");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    }
+                    startActivity(intent);
+                }
+            });
+
+        EditActivity.main = this;
+    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             updateCache();
-           // firsttime = true;
         }
     }
 
     public void updateCache() {
-        //cacheUI = null;
+        cacheUI = null;
         cacheUI = loadBitmapFromView(linearlayout);
         cacheUI = FastBlur.rsBlur(MainActivity.this, cacheUI, 25);
     }

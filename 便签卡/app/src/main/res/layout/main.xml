@@ -48,7 +48,8 @@
 		android:textSize="30sp"
 		android:layout_marginRight="24dp"
 		android:layout_marginBottom="24dp"
-		android:background="@drawable/plus"/>
+		android:background="@drawable/plus"
+		android:id="@+id/plus"/>
 
 </FrameLayout>
 

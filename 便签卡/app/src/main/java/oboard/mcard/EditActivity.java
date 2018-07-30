@@ -10,16 +10,16 @@ import android.view.View;
 public class EditActivity extends Activity {
     
     static MainActivity main;
-    EditText edittext;
-    TextView textview;
+    EditText edittext, textview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit);
         edittext = (EditText)findViewById(R.id.editEditText);
-        textview = (TextView)findViewById(R.id.editTextView1);
+        textview = (EditText)findViewById(R.id.editTextView1);
         edittext.setText(getIntent().getStringExtra("data").toString());
+        textview.setText(S.get("ti" + getIntent().getIntExtra("id", -1), "无标题"));
     }
     
     public void Finish(View view) {
@@ -27,7 +27,12 @@ public class EditActivity extends Activity {
     }
     
     public void Finish() {
-        S.put("t" + getIntent().getIntExtra("id", -1), edittext.getText().toString()).ok();
+        int id = getIntent().getIntExtra("id", -1);
+        if (S.get("tm", 0) < id)
+            S.addIndex("tm", "t", edittext.getText().toString()).ok();
+        S.put("t" + id, edittext.getText().toString())
+        .put("ti" + id, textview.getText().toString())
+        .ok();
         if (main != null)
         main.freshList();
         finishAndRemoveTask();
