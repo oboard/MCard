@@ -3,12 +3,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.view.View;
+import android.widget.EditText;
 
 public class EditActivity extends Activity {
-    
+
     static MainActivity main;
     EditText edittext, textview;
 
@@ -21,20 +20,24 @@ public class EditActivity extends Activity {
         edittext.setText(getIntent().getStringExtra("data").toString());
         textview.setText(S.get("ti" + getIntent().getIntExtra("id", -1), "无标题"));
     }
-    
+
     public void Finish(View view) {
         Finish();
     }
-    
+
     public void Finish() {
         int id = getIntent().getIntExtra("id", -1);
-        if (S.get("tm", 0) < id)
-            S.addIndex("tm", "t", edittext.getText().toString()).ok();
-        S.put("t" + id, edittext.getText().toString())
-        .put("ti" + id, textview.getText().toString())
-        .ok();
+        if (S.get("tm", 0) < id) {
+            S.addIndex("tm", "t", edittext.getText().toString())
+                .addIndex("tim", "ti", textview.getText().toString())
+                .ok();
+        } else {
+            S.put("t" + id, edittext.getText().toString())
+                .put("ti" + id, textview.getText().toString())
+                .ok();
+        }
         if (main != null)
-        main.freshList();
+            main.freshList();
         finishAndRemoveTask();
     }
 
@@ -44,7 +47,7 @@ public class EditActivity extends Activity {
             Finish();
         return super.onOptionsItemSelected(item);
     }
-    
+
     @Override 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK)

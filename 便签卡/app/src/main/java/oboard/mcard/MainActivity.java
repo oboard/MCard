@@ -41,11 +41,13 @@ public class MainActivity extends Activity {
         scrollview = (ScrollView)linearlayout.getParent();
         plus = (Button)findViewById(R.id.plus);
 
-        if (S.init(this, "mcard").get("f", false) == true) {
-            S.addIndex("tim", "ti", "｡◕‿◕｡").ok();
-            S.addIndex("tm", "t", "欢迎使用便签卡\n长按删除这条信息\n点击编辑这条信息\n开发者@一块小板子").ok();
+        S.init(this, "mcard");
+        if (S.get("tm", 0) == 0) {
+            S.addIndex("tm", "t", "欢迎使用便签卡\n长按删除这条信息\n点击编辑这条信息\n开发者@一块小板子")
+            .addIndex("tim", "ti", "｡◕‿◕｡")
+            .ok();
         }
-
+ 
         mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         ((FrameLayout)scrollview.getParent()).setBackgroundDrawable(mWallpaperManager.getDrawable());
 
@@ -108,7 +110,6 @@ public class MainActivity extends Activity {
     }
 
     public void freshList() {
-
         s.clear();
         //读取信息
         for (int i = 0; i < S.get("tm", 0); i++) {
