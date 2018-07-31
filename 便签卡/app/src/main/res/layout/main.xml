@@ -50,5 +50,46 @@
 		android:background="@drawable/plus"
 		android:id="@+id/plus"/>
 
+	<ImageView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:visibility="gone"
+		android:clickable="true"
+		android:id="@+id/mainImageView"/>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:id="@+id/mainMenu"
+		android:layout_gravity="bottom"
+		android:background="#55000000"
+		android:translationZ="30dp">
+
+		<Button
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:text="DELETE"
+			android:onClick="deleteCard"
+			android:textColor="#FF0F00"/>
+
+		<Button
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:onClick="shareCard"
+			android:text="SHARE"/>
+
+		<Button
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:onClick="copyCard"
+			android:text="COPY"/>
+
+	</LinearLayout>
+
 </FrameLayout>
 

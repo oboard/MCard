@@ -17,14 +17,23 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.animation.ValueAnimator;
+import android.view.animation.BounceInterpolator;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.ClipData;
+import android.animation.Animator;
 
 public class MainActivity extends Activity {
     ArrayList<String> s = new ArrayList<String>();
-    ArrayList<CardView> sc = new ArrayList<CardView>();
+    //ArrayList<CardView> sc = new ArrayList<CardView>();
     Bitmap cacheUI;//界面模糊缓存;
-    LinearLayout linearlayout;
+    LinearLayout linearlayout, menu;
     ScrollView scrollview;
     FrameLayout framelayout;
+    ImageView imageview;
     WallpaperManager mWallpaperManager;
     Button plus;
 
@@ -39,15 +48,17 @@ public class MainActivity extends Activity {
         linearlayout = (LinearLayout)findViewById(R.id.mainLinearLayout);
         framelayout = (FrameLayout)findViewById(R.id.mainFrameLayout);
         scrollview = (ScrollView)linearlayout.getParent();
+        imageview = (ImageView)findViewById(R.id.mainImageView);
+        menu = (LinearLayout)findViewById(R.id.mainMenu);
         plus = (Button)findViewById(R.id.plus);
 
         S.init(this, "mcard");
         if (S.get("tm", 0) == 0) {
             S.addIndex("tm", "t", "欢迎使用便签卡\n长按删除这条信息\n点击编辑这条信息\n开发者@一块小板子")
-            .addIndex("tim", "ti", "｡◕‿◕｡")
-            .ok();
+                .addIndex("tim", "ti", "｡◕‿◕｡")
+                .ok();
         }
- 
+
         mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         ((FrameLayout)scrollview.getParent()).setBackgroundDrawable(mWallpaperManager.getDrawable());
 
@@ -73,6 +84,62 @@ public class MainActivity extends Activity {
                         }
                     }
 
+                }
+            });
+
+        imageview.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    ValueAnimator v = ValueAnimator.ofFloat(1.0f, 0f).setDuration(450);
+                    v.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator v) {
+                                float i = v.getAnimatedValue();
+                                menu.setScaleX(i);
+                                menu.setScaleY(i);
+                                menu.setAlpha(i);
+                            }
+                        });
+                    v.addListener(new ValueAnimator.AnimatorListener() {
+                            public void onAnimationCancel(Animator a) {
+
+                            }
+                            public void onAnimationStart(Animator a) {
+
+                            }
+                            public void onAnimationRepeat(Animator a) {
+
+                            }
+                            public void onAnimationEnd(Animator a) {
+                                menu.setVisibility(View.GONE);
+                            }
+                        });
+                    v.setInterpolator(new BounceInterpolator());
+                    v.start();
+                    ValueAnimator v2 = ValueAnimator.ofFloat(0, 1).setDuration(225);
+                    v2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator v) {
+                                imageview.setAlpha((float)v.getAnimatedValue());
+                            }
+                        });
+                    v2.addListener(new ValueAnimator.AnimatorListener() {
+                            public void onAnimationCancel(Animator a) {
+
+                            }
+                            public void onAnimationStart(Animator a) {
+
+                            }
+                            public void onAnimationRepeat(Animator a) {
+
+                            }
+                            public void onAnimationEnd(Animator a) {
+                                imageview.setVisibility(View.GONE);
+                            }
+                        });
+                    v2.start();
+             
+                    ((ViewGroup)scrollview.getParent()).removeView((View)view.getTag());
+                   // freshList();
                 }
             });
 
@@ -102,6 +169,29 @@ public class MainActivity extends Activity {
             updateCache();
         }
     }
+    
+    public void deleteCard(View view) {
+        S.delIndex("tm", "t", ((int)((CardView)imageview.getTag()).getTag()))
+        .ok();
+        imageview.performClick();
+        freshList();
+    }
+    
+    public void copyCard(View view) {
+        ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText(null, S.get("t" + ((int)((CardView)imageview.getTag()).getTag()), "")));
+        imageview.performClick();
+    }
+    
+    
+    public void shareCard(View view) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_TEXT, S.get("t" + ((int)((CardView)imageview.getTag()).getTag()), ""));
+        startActivity(Intent.createChooser(i, "Share"));
+        imageview.performClick();
+    }
+    
 
     public void updateCache() {
         cacheUI = null;
@@ -124,6 +214,7 @@ public class MainActivity extends Activity {
             c.setLayoutParams(lp);
             c.setPadding(50, 100, 20, 100);
             c.setRound(10);
+            c.setTag(i);
             //c.setColor(Color.argb(250,255,255,255));
             final TextView t = new TextView(this);
             t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -149,6 +240,58 @@ public class MainActivity extends Activity {
 
                     }
                 });
+            c.setOnLongClickListener(new View.OnLongClickListener() {
+                    public boolean onLongClick(View view) {
+                        int h = (scrollview.getHeight() > cacheUI.getHeight()) ? cacheUI.getHeight() : scrollview.getHeight();
+                        if (cacheUI != null) {
+                            Bitmap cacheB = Bitmap.createBitmap(cacheUI);
+                            Canvas c = new Canvas(cacheB);
+                            c.drawColor(Color.BLACK);
+                            c.drawBitmap(cacheUI, 0, 0, null);
+                            imageview.setBackgroundColor(Color.BLACK);
+                            imageview.setImageBitmap(Bitmap.createBitmap(
+                                                                           cacheB,
+                                                                           0,
+                                                                           Math.abs(scrollview.getScrollY()),
+                                                                           cacheUI.getWidth(), 
+                                                                           h));
+                        }
+                        linearlayout.removeView(view);
+                        ((ViewGroup)scrollview.getParent()).addView(view);
+                        freshList();
+                        view.setElevation(20f);
+                        view.setZ(20f);
+                        view.setTranslationY(framelayout.getHeight());
+                        final View vv = view;
+                        ValueAnimator v = ValueAnimator.ofFloat(0.5f, 1.0f).setDuration(450);
+                        v.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator v) {
+                                    float i = v.getAnimatedValue();
+                                    menu.setScaleX(i);
+                                    menu.setScaleY(i);
+                                    vv.setScaleX(i);
+                                    vv.setScaleY(i);
+                                    menu.setAlpha(i);
+                                }
+                            });
+                        
+                        v.setInterpolator(new BounceInterpolator());
+                        v.start();
+                        ValueAnimator v2 = ValueAnimator.ofFloat(0, 1).setDuration(225);
+                        v2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator v) {
+                                    imageview.setAlpha((float)v.getAnimatedValue());
+                                }
+                            });
+                        v2.start();
+                        imageview.setTag(view);
+                        imageview.setVisibility(View.VISIBLE);
+                        menu.setVisibility(View.VISIBLE);
+                        return true;
+                    }
+                });
             linearlayout.addView(c);
         }
     }
@@ -161,8 +304,7 @@ public class MainActivity extends Activity {
         Bitmap screenshot;
         screenshot = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(screenshot);
-        //c.translate(-v.getScrollX(), -v.getScrollY());
-        mWallpaperManager.getDrawable().draw(c);
+        //c.drawColor(Color.BLACK);
         v.draw(c);
         return screenshot;
     }

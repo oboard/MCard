@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "oboard.mcard"
-        minSdkVersion 14
-        targetSdkVersion 22
+        minSdkVersion 21
+        targetSdkVersion 26
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
 
     buildTypes {
