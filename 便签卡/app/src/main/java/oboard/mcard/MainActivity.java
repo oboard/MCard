@@ -1,7 +1,12 @@
 package oboard.mcard;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.WallpaperManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,21 +15,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
-import android.widget.ImageView;
-import android.view.ViewGroup;
-import android.animation.ValueAnimator;
-import android.view.animation.BounceInterpolator;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.ClipData;
-import android.animation.Animator;
 
 public class MainActivity extends Activity {
     ArrayList<String> s = new ArrayList<String>();
@@ -100,22 +100,16 @@ public class MainActivity extends Activity {
                             }
                         });
                     v.addListener(new ValueAnimator.AnimatorListener() {
-                            public void onAnimationCancel(Animator a) {
-
-                            }
-                            public void onAnimationStart(Animator a) {
-
-                            }
-                            public void onAnimationRepeat(Animator a) {
-
-                            }
+                            public void onAnimationCancel(Animator a) {}
+                            public void onAnimationStart(Animator a) {}
+                            public void onAnimationRepeat(Animator a) {}
                             public void onAnimationEnd(Animator a) {
                                 menu.setVisibility(View.GONE);
                             }
                         });
                     v.setInterpolator(new BounceInterpolator());
                     v.start();
-                    ValueAnimator v2 = ValueAnimator.ofFloat(0, 1).setDuration(225);
+                    ValueAnimator v2 = ValueAnimator.ofFloat(1, 0).setDuration(225);
                     v2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator v) {
@@ -123,23 +117,17 @@ public class MainActivity extends Activity {
                             }
                         });
                     v2.addListener(new ValueAnimator.AnimatorListener() {
-                            public void onAnimationCancel(Animator a) {
-
-                            }
-                            public void onAnimationStart(Animator a) {
-
-                            }
-                            public void onAnimationRepeat(Animator a) {
-
-                            }
+                            public void onAnimationCancel(Animator a) {}
+                            public void onAnimationStart(Animator a) {}
+                            public void onAnimationRepeat(Animator a) {}
                             public void onAnimationEnd(Animator a) {
                                 imageview.setVisibility(View.GONE);
                             }
                         });
                     v2.start();
-             
+
                     ((ViewGroup)scrollview.getParent()).removeView((View)view.getTag());
-                   // freshList();
+                    // freshList();
                 }
             });
 
@@ -163,27 +151,37 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (imageview.getVisibility() == View.VISIBLE) {
+            imageview.performClick();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             updateCache();
         }
     }
-    
+
     public void deleteCard(View view) {
         S.delIndex("tm", "t", ((int)((CardView)imageview.getTag()).getTag()))
-        .ok();
+            .ok();
         imageview.performClick();
         freshList();
     }
-    
+
     public void copyCard(View view) {
         ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(ClipData.newPlainText(null, S.get("t" + ((int)((CardView)imageview.getTag()).getTag()), "")));
         imageview.performClick();
     }
-    
-    
+
     public void shareCard(View view) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
@@ -191,7 +189,7 @@ public class MainActivity extends Activity {
         startActivity(Intent.createChooser(i, "Share"));
         imageview.performClick();
     }
-    
+
 
     public void updateCache() {
         cacheUI = null;
@@ -244,17 +242,18 @@ public class MainActivity extends Activity {
                     public boolean onLongClick(View view) {
                         int h = (scrollview.getHeight() > cacheUI.getHeight()) ? cacheUI.getHeight() : scrollview.getHeight();
                         if (cacheUI != null) {
-                            Bitmap cacheB = Bitmap.createBitmap(cacheUI);
+                            Bitmap cacheB = Bitmap.createBitmap(cacheUI.getWidth(), scrollview.getHeight(), Bitmap.Config.ARGB_8888);
+
                             Canvas c = new Canvas(cacheB);
-                            c.drawColor(Color.BLACK);
-                            c.drawBitmap(cacheUI, 0, 0, null);
+                            //c.drawColor(Color.BLACK);
+                            c.drawBitmap(Bitmap.createBitmap(
+                                             cacheUI,
+                                             0,
+                                             Math.abs(scrollview.getScrollY()),
+                                             cacheUI.getWidth(), 
+                                             h), 0, 0, null);
                             imageview.setBackgroundColor(Color.BLACK);
-                            imageview.setImageBitmap(Bitmap.createBitmap(
-                                                                           cacheB,
-                                                                           0,
-                                                                           Math.abs(scrollview.getScrollY()),
-                                                                           cacheUI.getWidth(), 
-                                                                           h));
+                            imageview.setImageBitmap(cacheB);
                         }
                         linearlayout.removeView(view);
                         ((ViewGroup)scrollview.getParent()).addView(view);
@@ -275,7 +274,7 @@ public class MainActivity extends Activity {
                                     menu.setAlpha(i);
                                 }
                             });
-                        
+
                         v.setInterpolator(new BounceInterpolator());
                         v.start();
                         ValueAnimator v2 = ValueAnimator.ofFloat(0, 1).setDuration(225);
